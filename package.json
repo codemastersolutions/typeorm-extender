@@ -1,0 +1,42 @@
+{
+  "name": "@codemastersolutions/typeorm-extender",
+  "version": "0.0.1",
+  "description": "Utility to extend TypeORM functionalities",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codemastersolutions/typeorm-extender.git"
+  },
+  "keywords": [
+    "codemaster",
+    "codemastersolutions",
+    "cms",
+    "code",
+    "master",
+    "solutions",
+    "typeorm",
+    "typeorm-cli",
+    "typeorm-extender",
+    "extender",
+    "extender-cli",
+    "cli",
+    "migration",
+    "seed",
+    "factory",
+    "migrations",
+    "seeds",
+    "factories",
+    "migrator",
+    "generator",
+    "npm"
+  ],
+  "author": "Gilson Gabriel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codemastersolutions/typeorm-extender/issues"
+  },
+  "homepage": "https://github.com/codemastersolutions/typeorm-extender#readme"
+}
