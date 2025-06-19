@@ -1,6 +1,6 @@
 # TypeORM Extender
 
-[English](README.md) | [Português(Brasil)](README_pt_br.md)
+[English](README.md) | [Português(Brasil)](README_pt_BR.md)
 
 Una biblioteca TypeScript que extiende la funcionalidad de TypeORM con características y utilidades adicionales.
 
