@@ -124,21 +124,23 @@ jobs:
           echo "$COMMITS" >> changelog.md
           
           # Também salva para usar no release
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          cat changelog.md >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          {
+            echo "changelog<<EOF"
+            cat changelog.md
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
       
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.version.outputs.new_version }}
-          release_name: Release ${{ steps.version.outputs.new_version }}
+          name: Release ${{ steps.version.outputs.new_version }}
           body: |
             ${{ steps.changelog.outputs.changelog }}
             
-            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.pull_request.base.sha }}...${{ steps.version.outputs.new_version }}
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.pull_request.base.sha }}..${{ steps.version.outputs.new_version }}
           draft: false
           prerelease: false
       
