@@ -1,6 +1,8 @@
-# TypeORM Extender CLI
+# 🚀 TypeORM Extender CLI
 
-CLI completa para gerenciamento de migrations, factories e seeds no TypeORM.
+CLI poderoso para TypeORM com funcionalidades estendidas de migrations, seeds e factories.
+
+> 📋 **Problemas com instalação?** Consulte o [Guia de Instalação e Troubleshooting](./CLI_INSTALLATION.md)
 
 ## Instalação
 

@@ -13,12 +13,14 @@
     "README.md",
     "README_es.md",
     "README_pt_BR.md",
+    "CLI_README.md",
+    "CLI_INSTALLATION.md",
     "LICENSE",
     "LICENSE_es.md",
     "LICENSE_pt_BR.md"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
+    "build": "tsc --project tsconfig.build.json && node scripts/post-build.js",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "vitest run",
