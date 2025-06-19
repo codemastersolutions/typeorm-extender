@@ -1,6 +1,6 @@
 {
   "name": "@codemastersolutions/typeorm-extender",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Utility to extend TypeORM functionalities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
