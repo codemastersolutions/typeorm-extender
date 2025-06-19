@@ -22,9 +22,13 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:coverage:watch": "vitest --coverage",
+    "lint": "eslint src tests --ext .ts,.js",
+    "lint:fix": "eslint src tests --ext .ts,.js --fix",
+    "format": "prettier --write \"src/**/*.{ts,js,json}\" \"tests/**/*.{ts,js,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"tests/**/*.{ts,js,json}\"",
     "version:bump": "node scripts/get-version-bump.js",
     "changelog:generate": "node scripts/generate-changelog.js",
-    "release:check": "npm run test && npm run build"
+    "release:check": "npm run lint && npm run format:check && npm run test && npm run build"
   },
   "repository": {
     "type": "git",
@@ -61,10 +65,16 @@
   "homepage": "https://github.com/codemastersolutions/typeorm-extender#readme",
   "devDependencies": {
     "@types/node": "^24.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "conventional-changelog-cli": "^5.0.0",
     "conventional-recommended-bump": "^10.0.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
     "semver": "^7.6.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
