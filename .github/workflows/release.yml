@@ -70,21 +70,28 @@ jobs:
       - name: Determine version bump type
         id: version-bump
         run: |
-          # Analisa o título do PR para determinar o tipo de bump
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          PR_BODY="${{ github.event.pull_request.body }}"
+          # Usa conventional commits para determinar o tipo de bump
+          echo "Analisando commits para determinar tipo de bump..."
           
-          # Verifica por palavras-chave no título e corpo do PR
-          if echo "$PR_TITLE $PR_BODY" | grep -iE "(breaking|major|BREAKING CHANGE)"; then
-            echo "bump_type=major" >> $GITHUB_OUTPUT
-            echo "Version bump: MAJOR (breaking changes detected)"
-          elif echo "$PR_TITLE $PR_BODY" | grep -iE "(feat|feature|minor)"; then
-            echo "bump_type=minor" >> $GITHUB_OUTPUT
-            echo "Version bump: MINOR (new feature detected)"
-          else
-            echo "bump_type=patch" >> $GITHUB_OUTPUT
-            echo "Version bump: PATCH (bug fix or other changes)"
-          fi
+          # Executa o script que analisa conventional commits
+          BUMP_TYPE=$(npm run version:bump --silent)
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+          
+          case $BUMP_TYPE in
+            major)
+              echo "🚨 Version bump: MAJOR (breaking changes detected)"
+              ;;
+            minor)
+              echo "✨ Version bump: MINOR (new features detected)"
+              ;;
+            patch)
+              echo "🐛 Version bump: PATCH (bug fixes or other changes)"
+              ;;
+            *)
+              echo "📦 Version bump: PATCH (default)"
+              echo "bump_type=patch" >> $GITHUB_OUTPUT
+              ;;
+          esac
       
       - name: Bump version
         id: version
@@ -111,25 +118,23 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          # Gera changelog baseado nos commits desde a última tag
-          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
-          else
-            COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges)
-          fi
+          # Gera changelog baseado em conventional commits
+          echo "Gerando changelog baseado em conventional commits..."
+          
+          # Executa o script que gera changelog
+          CHANGELOG=$(npm run changelog:generate --silent)
           
           # Salva o changelog em um arquivo
-          echo "## Changes" > changelog.md
-          echo "" >> changelog.md
-          echo "$COMMITS" >> changelog.md
+          echo "$CHANGELOG" > changelog.md
           
           # Também salva para usar no release
           {
             echo "changelog<<EOF"
-            cat changelog.md
+            echo "$CHANGELOG"
             echo "EOF"
           } >> $GITHUB_OUTPUT
+          
+          echo "📝 Changelog gerado com sucesso"
       
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -154,13 +159,22 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const bumpType = '${{ steps.version-bump.outputs.bump_type }}';
+            const bumpEmoji = {
+              'major': '🚨',
+              'minor': '✨', 
+              'patch': '🐛'
+            }[bumpType] || '📦';
+            
             github.rest.issues.createComment({
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `🚀 **Release Created Successfully!**\n\n` +
-                    `- **Version**: ${{ steps.version.outputs.new_version }}\n` +
-                    `- **Type**: ${{ steps.version-bump.outputs.bump_type }}\n` +
-                    `- **NPM**: https://www.npmjs.com/package/@codemastersolutions/typeorm-extender\n` +
-                    `- **Release**: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.new_version }}`
+                    `${bumpEmoji} **Version**: ${{ steps.version.outputs.new_version }} (${bumpType})\n` +
+                    `📋 **Semantic Versioning**: Baseado em Conventional Commits\n` +
+                    `📦 **NPM**: https://www.npmjs.com/package/@codemastersolutions/typeorm-extender\n` +
+                    `🏷️ **Release**: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.new_version }}\n\n` +
+                    `---\n\n` +
+                    `**Changelog:**\n\n${{ steps.changelog.outputs.changelog }}`
             });

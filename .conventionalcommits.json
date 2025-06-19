@@ -1,0 +1,59 @@
+{
+  "types": {
+    "feat": {
+      "description": "A new feature",
+      "title": "Features",
+      "semver": "minor"
+    },
+    "fix": {
+      "description": "A bug fix",
+      "title": "Bug Fixes",
+      "semver": "patch"
+    },
+    "docs": {
+      "description": "Documentation only changes",
+      "title": "Documentation",
+      "semver": "patch"
+    },
+    "style": {
+      "description": "Changes that do not affect the meaning of the code",
+      "title": "Styles",
+      "semver": "patch"
+    },
+    "refactor": {
+      "description": "A code change that neither fixes a bug nor adds a feature",
+      "title": "Code Refactoring",
+      "semver": "patch"
+    },
+    "perf": {
+      "description": "A code change that improves performance",
+      "title": "Performance Improvements",
+      "semver": "patch"
+    },
+    "test": {
+      "description": "Adding missing tests or correcting existing tests",
+      "title": "Tests",
+      "semver": "patch"
+    },
+    "build": {
+      "description": "Changes that affect the build system or external dependencies",
+      "title": "Builds",
+      "semver": "patch"
+    },
+    "ci": {
+      "description": "Changes to our CI configuration files and scripts",
+      "title": "Continuous Integrations",
+      "semver": "patch"
+    },
+    "chore": {
+      "description": "Other changes that don't modify src or test files",
+      "title": "Chores",
+      "semver": "patch"
+    },
+    "revert": {
+      "description": "Reverts a previous commit",
+      "title": "Reverts",
+      "semver": "patch"
+    }
+  }
+}
