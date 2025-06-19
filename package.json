@@ -38,5 +38,8 @@
   "bugs": {
     "url": "https://github.com/codemastersolutions/typeorm-extender/issues"
   },
-  "homepage": "https://github.com/codemastersolutions/typeorm-extender#readme"
+  "homepage": "https://github.com/codemastersolutions/typeorm-extender#readme",
+  "dependencies": {
+    "typescript": "^5.8.3"
+  }
 }
