@@ -4,8 +4,12 @@
   "description": "Utility to extend TypeORM functionalities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "typeorm-extender": "./bin/typeorm-extender"
+  },
   "files": [
     "dist/**/*",
+    "bin/**/*",
     "README.md",
     "README_es.md",
     "README_pt_BR.md",
@@ -28,7 +32,19 @@
     "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"tests/**/*.{ts,js,json}\"",
     "version:bump": "node scripts/get-version-bump.js",
     "changelog:generate": "node scripts/generate-changelog.js",
-    "release:check": "npm run lint && npm run format:check && npm run test && npm run build"
+    "release:check": "npm run lint && npm run format:check && npm run test && npm run build",
+    "cli": "ts-node src/cli/index.ts",
+    "typeorm-extender": "ts-node src/cli/index.ts",
+    "init": "npm run cli init",
+    "migration:create": "npm run cli migration:create",
+    "migration:run": "npm run cli migration:run",
+    "migration:revert": "npm run cli migration:revert",
+    "migration:status": "npm run cli migration:status",
+    "factory:create": "npm run cli factory:create",
+    "seed:create": "npm run cli seed:create",
+    "seed:run": "npm run cli seed:run",
+    "seed:list": "npm run cli seed:list",
+    "db:setup": "npm run cli db:setup"
   },
   "repository": {
     "type": "git",
@@ -63,6 +79,12 @@
     "url": "https://github.com/codemastersolutions/typeorm-extender/issues"
   },
   "homepage": "https://github.com/codemastersolutions/typeorm-extender#readme",
+  "dependencies": {
+    "@faker-js/faker": "^9.2.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "ts-node": "^10.9.2"
+  },
   "devDependencies": {
     "@types/node": "^24.0.3",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
