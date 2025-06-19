@@ -21,7 +21,10 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:coverage:watch": "vitest --coverage"
+    "test:coverage:watch": "vitest --coverage",
+    "version:bump": "node scripts/get-version-bump.js",
+    "changelog:generate": "node scripts/generate-changelog.js",
+    "release:check": "npm run test && npm run build"
   },
   "repository": {
     "type": "git",
@@ -60,6 +63,9 @@
     "@types/node": "^24.0.3",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
+    "conventional-changelog-cli": "^5.0.0",
+    "conventional-recommended-bump": "^10.0.0",
+    "semver": "^7.6.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
