@@ -7,7 +7,11 @@
   "files": [
     "dist/**/*",
     "README.md",
-    "LICENSE"
+    "README_es.md",
+    "README_pt_BR.md",
+    "LICENSE",
+    "LICENSE_es.md",
+    "LICENSE_pt_BR.md"
   ],
   "scripts": {
     "build": "tsc",
