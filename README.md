@@ -1,6 +1,6 @@
 # TypeORM Extender
 
-[Português](README.pt-BR.md) | [Español](README.es.md)
+[Português](README.pt_BR.md) | [Español](README.es.md)
 
 # TypeORM Extender
 
