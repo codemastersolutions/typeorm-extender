@@ -13,7 +13,11 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
-    "test": "npm run test"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:watch": "vitest --coverage"
   },
   "repository": {
     "type": "git",
@@ -49,7 +53,11 @@
   },
   "homepage": "https://github.com/codemastersolutions/typeorm-extender#readme",
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "@types/node": "^24.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "typeorm": ">=0.3.0"

@@ -4,9 +4,11 @@ Este documento descreve como publicar o pacote `@codemastersolutions/typeorm-ext
 
 ## Pré-requisitos
 
-1. **Conta no NPM**: Certifique-se de ter uma conta no [npmjs.com](https://www.npmjs.com/)
-2. **Login no NPM**: Execute `npm login` para fazer login na sua conta
-3. **Permissões**: Certifique-se de ter permissões para publicar no escopo `@codemastersolutions`
+1. **Conta NPM**: Certifique-se de ter uma conta no [npmjs.com](https://www.npmjs.com/)
+2. **Autenticação**: Execute `npm login` para autenticar
+3. **Permissões**: Verifique se tem permissão para publicar no escopo `@codemastersolutions`
+4. **Testes**: Certifique-se de que todos os testes passam (`npm test`)
+5. **Build**: Certifique-se de que o projeto compila sem erros
 
 ## Passos para Publicação
 
@@ -19,15 +21,35 @@ O projeto já está configurado com:
 - ✅ `.npmignore` para excluir arquivos desnecessários
 - ✅ Estrutura de diretórios adequada (`src/` para código fonte, `dist/` para compilado)
 
-### 2. Testar a Compilação
+### 2. Executar Testes
 
 ```bash
+# Executar todos os testes
+npm test
+
+# Executar testes com cobertura (opcional)
+npm run test:coverage
+
+# Verificar se todos os testes passaram
+echo "✅ Todos os testes devem passar antes de publicar"
+```
+
+### 3. Testar a Compilação
+
+```bash
+# Limpar diretório de build anterior
+npm run clean
+
+# Compilar o projeto
 npm run build
+
+# Verificar se os arquivos foram gerados
+ls -la dist/
 ```
 
 Este comando deve gerar os arquivos compilados no diretório `dist/`.
 
-### 3. Verificar o Conteúdo do Pacote
+### 4. Verificar o Conteúdo do Pacote
 
 ```bash
 npm pack --dry-run
@@ -35,7 +57,7 @@ npm pack --dry-run
 
 Este comando mostra quais arquivos serão incluídos no pacote sem criar o arquivo `.tgz`.
 
-### 4. Atualizar a Versão
+### 5. Atualizar a Versão
 
 ```bash
 # Para uma correção de bug (0.0.1 -> 0.0.2)
@@ -48,7 +70,7 @@ npm version minor
 npm version major
 ```
 
-### 5. Publicar
+### 6. Publicar
 
 ```bash
 npm publish
