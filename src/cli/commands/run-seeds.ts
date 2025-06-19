@@ -9,6 +9,7 @@ const exists = promisify(fs.exists);
 interface RunSeedsOptions {
   config?: string;
   seed?: string;
+  datasource?: string;
 }
 
 export async function runSeeds(options: RunSeedsOptions = {}): Promise<void> {
@@ -17,15 +18,26 @@ export async function runSeeds(options: RunSeedsOptions = {}): Promise<void> {
   let dataSource: DataSource | undefined;
   
   try {
-    // Carregar configuração do arquivo
-    const configPath = options.config || 'ormconfig.json';
-    
-    if (!fs.existsSync(configPath)) {
-      throw new Error(`Arquivo de configuração não encontrado: ${configPath}`);
+    if (options.datasource) {
+      // Usar DataSource customizado
+      console.log(`📄 Carregando DataSource customizado: ${options.datasource}`);
+      const { AppDataSource } = await import(path.resolve(options.datasource));
+      dataSource = AppDataSource;
+    } else {
+      // Carregar configuração do arquivo
+      const configPath = options.config || 'ormconfig.json';
+      
+      if (!fs.existsSync(configPath)) {
+        throw new Error(`Arquivo de configuração não encontrado: ${configPath}`);
+      }
+      
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      dataSource = new DataSource(config);
     }
-    
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    dataSource = new DataSource(config);
+
+    if (!dataSource) {
+      throw new Error('Falha ao carregar configuração do DataSource');
+    }
 
     // Inicializar conexão
     if (!dataSource.isInitialized) {
@@ -49,7 +61,7 @@ export async function runSeeds(options: RunSeedsOptions = {}): Promise<void> {
 
     // Executar seeds em ordem
     for (const seedFile of seedFiles) {
-      await executeSeedFile(seedFile, dataSource);
+      await executeSeedFile(seedFile, dataSource!);
     }
 
     console.log('✅ Todos os seeds foram executados com sucesso');

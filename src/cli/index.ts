@@ -20,6 +20,7 @@ program
   .command('init')
   .description('Inicializa a estrutura do projeto com configurações padrão')
   .option('-d, --database <type>', 'Tipo de banco de dados (postgres, mysql, sqlite)', 'postgres')
+  .option('--datasource <path>', 'Caminho para arquivo de configuração do DataSource customizado')
   .action(initProject);
 
 // Comandos para migrations
@@ -33,6 +34,7 @@ program
   .command('migration:run')
   .description('Executa todas as migrations pendentes')
   .option('-c, --config <path>', 'Caminho para o arquivo de configuração', 'ormconfig.json')
+  .option('--datasource <path>', 'Caminho para arquivo de configuração do DataSource customizado')
   .action(runMigrations);
 
 // Comandos para factories
@@ -55,6 +57,7 @@ program
   .command('seed:run')
   .description('Executa todos os seeds')
   .option('-c, --config <path>', 'Caminho para o arquivo de configuração', 'ormconfig.json')
+  .option('--datasource <path>', 'Caminho para arquivo de configuração do DataSource customizado')
   .option('-s, --seed <name>', 'Executa um seed específico')
   .action(runSeeds);
 
@@ -63,6 +66,7 @@ program
   .command('db:setup')
   .description('Executa migrations e seeds em sequência')
   .option('-c, --config <path>', 'Caminho para o arquivo de configuração', 'ormconfig.json')
+  .option('--datasource <path>', 'Caminho para arquivo de configuração do DataSource customizado')
   .action(async (options) => {
     console.log('🚀 Configurando banco de dados...');
     await runMigrations(options);

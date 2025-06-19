@@ -30,6 +30,9 @@ typeorm-extender init --database mysql
 
 # Inicializar with SQLite
 typeorm-extender init --database sqlite
+
+# Usar DataSource customizado
+typeorm-extender init --datasource ./path/to/custom-datasource.ts
 ```
 
 **Opções:**
@@ -68,6 +71,9 @@ typeorm-extender migration:run
 
 # Executar com arquivo de configuração específico
 typeorm-extender migration:run --config custom-ormconfig.json
+
+# Executar migrations com DataSource customizado
+typeorm-extender migration:run --datasource ./src/config/custom-datasource.ts
 ```
 
 **Opções:**
@@ -125,6 +131,9 @@ typeorm-extender seed:run --seed UserSeed
 
 # Executar com configuração específica
 typeorm-extender seed:run --config custom-ormconfig.json
+
+# Executar seeds com DataSource customizado
+typeorm-extender seed:run --datasource ./src/config/custom-datasource.ts
 ```
 
 **Opções:**
@@ -142,6 +151,9 @@ typeorm-extender db:setup
 
 # Com configuração específica
 typeorm-extender db:setup --config custom-ormconfig.json
+
+# Com DataSource customizado
+typeorm-extender db:setup --datasource ./src/config/custom-datasource.ts
 ```
 
 **Opções:**
@@ -196,28 +208,9 @@ project/
 
 ## Configuração
 
-### Variáveis de Ambiente
+O TypeORM Extender CLI oferece múltiplas formas de configuração:
 
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-# Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=password
-DB_DATABASE=myapp
-
-# Para SQLite
-DB_PATH=database.sqlite
-
-# Environment
-NODE_ENV=development
-```
-
-### Arquivo ormconfig.json
-
-O comando `init` cria automaticamente este arquivo baseado no tipo de banco escolhido:
+### 1. Arquivo ormconfig.json (Padrão)
 
 ```json
 {
@@ -236,6 +229,74 @@ O comando `init` cria automaticamente este arquivo baseado no tipo de banco esco
   "synchronize": false,
   "logging": true
 }
+```
+
+### 2. Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+# Configurações do Banco de Dados
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=password
+DB_DATABASE=myapp
+
+# Para SQLite
+DB_PATH=database.sqlite
+
+# Configurações do TypeORM
+TYPEORM_ENTITIES=src/entities/**/*.ts,dist/entities/**/*.js
+TYPEORM_MIGRATIONS=src/migrations/**/*.ts,dist/migrations/**/*.js
+TYPEORM_ENTITIES_DIR=src/entities
+TYPEORM_MIGRATIONS_DIR=src/migrations
+TYPEORM_SYNCHRONIZE=false
+TYPEORM_LOGGING=true
+TYPEORM_MAX_QUERY_EXECUTION_TIME=1000
+TYPEORM_DROP_SCHEMA=false
+TYPEORM_CACHE=false
+
+# Ambiente
+NODE_ENV=development
+```
+
+### 3. DataSource Customizado
+
+Crie um arquivo TypeScript com configuração personalizada:
+
+```typescript
+// src/config/custom-datasource.ts
+import { DataSource } from 'typeorm';
+import { config } from 'dotenv';
+
+config();
+
+export const AppDataSource = new DataSource({
+  type: 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  username: process.env.DB_USERNAME || 'postgres',
+  password: process.env.DB_PASSWORD || 'password',
+  database: process.env.DB_DATABASE || 'myapp',
+  
+  entities: ['src/entities/**/*.ts'],
+  migrations: ['src/migrations/**/*.ts'],
+  
+  synchronize: false,
+  logging: process.env.NODE_ENV === 'development',
+  
+  // Configurações avançadas
+  maxQueryExecutionTime: 1000,
+  extra: {
+    connectionLimit: 10,
+  },
+});
+```
+
+Use com:
+```bash
+typeorm-extender migration:run --datasource ./src/config/custom-datasource.ts
 ```
 
 ## Exemplos de Uso

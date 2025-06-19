@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 import { promisify } from 'util';
 
 const writeFile = promisify(fs.writeFile);
@@ -8,11 +7,16 @@ const exists = promisify(fs.exists);
 
 interface InitOptions {
   database: string;
+  datasource?: string;
 }
 
 export async function initProject(options: InitOptions): Promise<void> {
   console.log('🚀 Inicializando projeto TypeORM Extender...');
-  
+
+  if (options.datasource) {
+    console.log(`📄 Usando DataSource customizado: ${options.datasource}`);
+  }
+
   try {
     // Criar diretórios necessários
     const directories = [
@@ -20,7 +24,7 @@ export async function initProject(options: InitOptions): Promise<void> {
       'src/migrations',
       'src/factories',
       'src/seeds',
-      'src/config'
+      'src/config',
     ];
 
     for (const dir of directories) {
@@ -36,9 +40,21 @@ export async function initProject(options: InitOptions): Promise<void> {
     console.log('⚙️ Criado arquivo de configuração: ormconfig.json');
 
     // Criar arquivo de configuração do DataSource
-    const dataSourceConfig = generateDataSourceConfig(options.database);
-    await writeFile('src/config/data-source.ts', dataSourceConfig);
-    console.log('⚙️ Criado DataSource: src/config/data-source.ts');
+    if (options.datasource) {
+      // Copiar arquivo de DataSource customizado
+      const customDataSource = await fs.promises.readFile(
+        options.datasource,
+        'utf8'
+      );
+      await writeFile('src/config/data-source.ts', customDataSource);
+      console.log(
+        `⚙️ Copiado DataSource customizado: ${options.datasource} -> src/config/data-source.ts`
+      );
+    } else {
+      const dataSourceConfig = generateDataSourceConfig(options.database);
+      await writeFile('src/config/data-source.ts', dataSourceConfig);
+      console.log('⚙️ Criado DataSource: src/config/data-source.ts');
+    }
 
     // Criar exemplo de entidade
     const exampleEntity = generateExampleEntity();
@@ -62,7 +78,6 @@ export async function initProject(options: InitOptions): Promise<void> {
     console.log('3. Execute: npm run migration:run');
     console.log('4. Execute: npm run factory:create UserFactory');
     console.log('5. Execute: npm run seed:create UserSeed');
-    
   } catch (error) {
     console.error('❌ Erro ao inicializar projeto:', error);
     process.exit(1);
@@ -72,14 +87,20 @@ export async function initProject(options: InitOptions): Promise<void> {
 function generateOrmConfig(database: string): object {
   const baseConfig = {
     type: database,
-    entities: ['src/entities/**/*.ts'],
-    migrations: ['src/migrations/**/*.ts'],
+    entities: process.env.TYPEORM_ENTITIES?.split(',') || [
+      'src/entities/**/*.ts',
+    ],
+    migrations: process.env.TYPEORM_MIGRATIONS?.split(',') || [
+      'src/migrations/**/*.ts',
+    ],
     cli: {
-      entitiesDir: 'src/entities',
-      migrationsDir: 'src/migrations'
+      entitiesDir: process.env.TYPEORM_ENTITIES_DIR || 'src/entities',
+      migrationsDir: process.env.TYPEORM_MIGRATIONS_DIR || 'src/migrations',
     },
-    synchronize: false,
-    logging: true
+    synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true' || false,
+    logging:
+      process.env.TYPEORM_LOGGING === 'true' ||
+      process.env.NODE_ENV === 'development',
   };
 
   switch (database) {
@@ -90,7 +111,7 @@ function generateOrmConfig(database: string): object {
         port: parseInt(process.env.DB_PORT || '5432'),
         username: process.env.DB_USERNAME || 'postgres',
         password: process.env.DB_PASSWORD || 'password',
-        database: process.env.DB_DATABASE || 'myapp'
+        database: process.env.DB_DATABASE || 'myapp',
       };
     case 'mysql':
       return {
@@ -99,12 +120,12 @@ function generateOrmConfig(database: string): object {
         port: parseInt(process.env.DB_PORT || '3306'),
         username: process.env.DB_USERNAME || 'root',
         password: process.env.DB_PASSWORD || 'password',
-        database: process.env.DB_DATABASE || 'myapp'
+        database: process.env.DB_DATABASE || 'myapp',
       };
     case 'sqlite':
       return {
         ...baseConfig,
-        database: process.env.DB_PATH || 'database.sqlite'
+        database: process.env.DB_PATH || 'database.sqlite',
       };
     default:
       return baseConfig;
@@ -119,18 +140,23 @@ config();
 
 export const AppDataSource = new DataSource({
   type: '${database}' as any,
-  ${database === 'sqlite' 
-    ? `database: process.env.DB_PATH || 'database.sqlite',`
-    : `host: process.env.DB_HOST || 'localhost',
+  ${
+    database === 'sqlite'
+      ? `database: process.env.DB_PATH || 'database.sqlite',`
+      : `host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '${database === 'postgres' ? '5432' : '3306'}'),
   username: process.env.DB_USERNAME || '${database === 'postgres' ? 'postgres' : 'root'}',
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_DATABASE || 'myapp',`
   }
-  entities: ['src/entities/**/*.ts'],
-  migrations: ['src/migrations/**/*.ts'],
-  synchronize: false,
-  logging: process.env.NODE_ENV === 'development',
+  entities: process.env.TYPEORM_ENTITIES?.split(',') || ['src/entities/**/*.ts'],
+  migrations: process.env.TYPEORM_MIGRATIONS?.split(',') || ['src/migrations/**/*.ts'],
+  synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true' || false,
+  logging: process.env.TYPEORM_LOGGING === 'true' || process.env.NODE_ENV === 'development',
+  // Configurações adicionais via variáveis de ambiente
+  maxQueryExecutionTime: parseInt(process.env.TYPEORM_MAX_QUERY_EXECUTION_TIME || '1000'),
+  dropSchema: process.env.TYPEORM_DROP_SCHEMA === 'true' || false,
+  cache: process.env.TYPEORM_CACHE === 'true' || false,
 });
 `;
 }
@@ -178,7 +204,7 @@ export abstract class BaseFactory<T> {
   }
 
   abstract make(overrides?: Partial<T>): T;
-  
+
   async create(overrides?: Partial<T>): Promise<T> {
     const entity = this.make(overrides);
     const repository = this.dataSource.getRepository(this.getEntityClass());
