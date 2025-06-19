@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
+import { i18n } from '../i18n';
 
 const writeFile = promisify(fs.writeFile);
 const mkdir = promisify(fs.mkdir);
@@ -13,13 +14,13 @@ interface SeedOptions {
 }
 
 export async function createSeed(name: string, options: SeedOptions): Promise<void> {
-  console.log(`🌱 Criando seed: ${name}`);
+  console.log(i18n.t('seed.create.messages.creating', { name }));
   
   try {
     // Garantir que o diretório existe
     if (!(await exists(options.dir))) {
       await mkdir(options.dir, { recursive: true });
-      console.log(`📁 Criado diretório: ${options.dir}`);
+      console.log(i18n.t('seed.create.messages.directoryCreated', { dir: options.dir }));
     }
 
     // Verificar se a factory existe
@@ -29,13 +30,13 @@ export async function createSeed(name: string, options: SeedOptions): Promise<vo
     if (factoryName) {
       factoryPath = await findFactoryFile(factoryName);
       if (!factoryPath) {
-        console.log(`⚠️ Factory '${factoryName}' não encontrada, mas o seed será criado mesmo assim`);
+        console.log(i18n.t('seed.create.messages.factoryNotFound', { factory: factoryName }));
       }
     }
 
     const className = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
     if (!className.endsWith('Seed')) {
-      console.log('⚠️ Recomendação: Nome do seed deve terminar com "Seed"');
+      console.log(i18n.t('seed.create.messages.nameRecommendation'));
     }
 
     const fileName = `${name}.seed.ts`;
@@ -45,15 +46,15 @@ export async function createSeed(name: string, options: SeedOptions): Promise<vo
     const seedContent = generateSeedTemplate(className, factoryName, factoryPath);
     
     await writeFile(filePath, seedContent);
-    console.log(`✅ Seed criado: ${filePath}`);
+    console.log(i18n.t('seed.create.messages.success', { name: filePath }));
     
-    console.log('\n📋 Próximos passos:');
-    console.log('1. Edite o seed para definir os dados a serem inseridos');
-    console.log('2. Execute: npm run seed:run');
-    console.log(`3. Ou execute apenas este seed: npm run seed:run -- --seed ${name}`);
+    console.log('\n' + i18n.t('seed.create.messages.nextSteps'));
+    console.log(i18n.t('seed.create.messages.editSeed'));
+    console.log(i18n.t('seed.create.messages.runSeed'));
+    console.log(i18n.t('seed.create.messages.runSpecificSeed', { name }));
     
   } catch (error) {
-    console.error('❌ Erro ao criar seed:', error);
+    console.error(i18n.t('seed.create.messages.error'), error);
     process.exit(1);
   }
 }
@@ -175,7 +176,7 @@ export class ${className} extends BaseSeed {
 
 // Exemplo de uso avançado:
 /*
-export class ${className} extends BaseSeed {
+export class \${className} extends BaseSeed {
   async run(): Promise<void> {
     await this.ensureConnection();
     

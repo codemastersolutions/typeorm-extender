@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
+import { i18n } from '../i18n';
 
 const writeFile = promisify(fs.writeFile);
 const mkdir = promisify(fs.mkdir);
@@ -13,13 +14,13 @@ interface FactoryOptions {
 }
 
 export async function createFactory(name: string, options: FactoryOptions): Promise<void> {
-  console.log(`🏭 Criando factory: ${name}`);
+  console.log(i18n.t('factory.create.messages.creating', { name }));
   
   try {
     // Garantir que o diretório existe
     if (!(await exists(options.dir))) {
       await mkdir(options.dir, { recursive: true });
-      console.log(`📁 Criado diretório: ${options.dir}`);
+      console.log(i18n.t('factory.create.messages.directoryCreated', { dir: options.dir }));
     }
 
     // Determinar nome da entidade
@@ -34,7 +35,7 @@ export async function createFactory(name: string, options: FactoryOptions): Prom
     
     const className = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
     if (!className.endsWith('Factory')) {
-      console.log('⚠️ Recomendação: Nome da factory deve terminar com "Factory"');
+      console.log(i18n.t('factory.create.messages.nameRecommendation'));
     }
 
     const fileName = `${name}.factory.ts`;
@@ -44,15 +45,15 @@ export async function createFactory(name: string, options: FactoryOptions): Prom
     const factoryContent = generateFactoryTemplate(className, entityName, entityPath);
     
     await writeFile(filePath, factoryContent);
-    console.log(`✅ Factory criada: ${filePath}`);
+    console.log(i18n.t('factory.create.messages.success', { name: filePath }));
     
-    console.log('\n📋 Próximos passos:');
-    console.log('1. Edite a factory para definir os dados padrão');
-    console.log('2. Use a factory em seus seeds ou testes');
-    console.log(`3. Exemplo: const user = await new ${className}().create();`);
+    console.log('\n' + i18n.t('factory.create.messages.nextSteps'));
+    console.log(i18n.t('factory.create.messages.editFactory'));
+    console.log(i18n.t('factory.create.messages.useFactory'));
+    console.log(i18n.t('factory.create.messages.exampleUsage', { className }));
     
   } catch (error) {
-    console.error('❌ Erro ao criar factory:', error);
+    console.error(i18n.t('factory.create.messages.error'), error);
     process.exit(1);
   }
 }

@@ -1,53 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import { promisify } from 'util';
-import { i18n } from '../i18n';
+import { MigrationInterface, QueryRunner, Table, Index, ForeignKey } from 'typeorm';
 
-const writeFile = promisify(fs.writeFile);
-const mkdir = promisify(fs.mkdir);
-const exists = promisify(fs.exists);
-
-interface MigrationOptions {
-  dir: string;
-}
-
-export async function createMigration(name: string, options: MigrationOptions): Promise<void> {
-  console.log(i18n.t('migration.create.messages.creating', { name }));
-  
-  try {
-    // Garantir que o diretório existe
-    if (!(await exists(options.dir))) {
-      await mkdir(options.dir, { recursive: true });
-      console.log(i18n.t('migration.create.messages.directoryCreated', { dir: options.dir }));
-    }
-
-    // Gerar timestamp
-    const timestamp = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
-    const className = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-    const fileName = `${timestamp}-${name}.ts`;
-    const filePath = path.join(options.dir, fileName);
-
-    // Gerar conteúdo da migration
-    const migrationContent = generateMigrationTemplate(className, timestamp);
-    
-    await writeFile(filePath, migrationContent);
-    console.log(i18n.t('migration.create.messages.success', { name: filePath }));
-    
-    console.log('\n' + i18n.t('migration.create.messages.nextSteps'));
-    console.log(i18n.t('migration.create.messages.editMigration'));
-    console.log(i18n.t('migration.create.messages.runMigration'));
-    
-  } catch (error) {
-    console.error(i18n.t('migration.create.messages.error'), error);
-    process.exit(1);
-  }
-}
-
-function generateMigrationTemplate(className: string, timestamp: string): string {
-  return `import { MigrationInterface, QueryRunner, Table, Index, ForeignKey } from 'typeorm';
-
-export class ${className}${timestamp} implements MigrationInterface {
-  name = '${className}${timestamp}';
+export class TestMigrationFixed20250619173821 implements MigrationInterface {
+  name = 'TestMigrationFixed20250619173821';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Exemplo: Criar uma tabela
@@ -158,6 +112,4 @@ export class ${className}${timestamp} implements MigrationInterface {
     await queryRunner.dropForeignKey('example_table', 'FK_EXAMPLE_USER');
     */
   }
-}
-`;
 }

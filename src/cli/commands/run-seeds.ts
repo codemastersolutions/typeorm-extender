@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
+import { i18n } from '../i18n';
 
 const readdir = promisify(fs.readdir);
 const exists = promisify(fs.exists);
@@ -13,14 +14,14 @@ interface RunSeedsOptions {
 }
 
 export async function runSeeds(options: RunSeedsOptions = {}): Promise<void> {
-  console.log('🌱 Executando seeds...');
+  console.log(i18n.t('seed.run.messages.running'));
   
   let dataSource: DataSource | undefined;
   
   try {
     if (options.datasource) {
       // Usar DataSource customizado
-      console.log(`📄 Carregando DataSource customizado: ${options.datasource}`);
+      console.log(i18n.t('seed.run.messages.loadingDatasource', { path: options.datasource }));
       const { AppDataSource } = await import(path.resolve(options.datasource));
       dataSource = AppDataSource;
     } else {
@@ -42,7 +43,7 @@ export async function runSeeds(options: RunSeedsOptions = {}): Promise<void> {
     // Inicializar conexão
     if (!dataSource.isInitialized) {
       await dataSource.initialize();
-      console.log('✅ Conexão com banco de dados estabelecida');
+      console.log(i18n.t('seed.run.messages.connected'));
     }
 
     // Encontrar arquivos de seed
@@ -50,37 +51,37 @@ export async function runSeeds(options: RunSeedsOptions = {}): Promise<void> {
     
     if (seedFiles.length === 0) {
       if (options.seed) {
-        console.log(`ℹ️ Seed '${options.seed}' não encontrado`);
+        console.log(i18n.t('seed.run.messages.seedNotFound', { name: options.seed }));
       } else {
-        console.log('ℹ️ Nenhum arquivo de seed encontrado');
+        console.log(i18n.t('seed.run.messages.noSeedsFound'));
       }
       return;
     }
 
-    console.log(`📋 Encontrados ${seedFiles.length} seed(s) para executar`);
+    console.log(i18n.t('seed.run.messages.foundSeeds', { count: seedFiles.length }));
 
     // Executar seeds em ordem
     for (const seedFile of seedFiles) {
       await executeSeedFile(seedFile, dataSource!);
     }
 
-    console.log('✅ Todos os seeds foram executados com sucesso');
+    console.log(i18n.t('seed.run.messages.success'));
 
   } catch (error) {
-    console.error('❌ Erro ao executar seeds:', error);
+    console.error(i18n.t('seed.run.messages.error'), error);
     
     if (error instanceof Error) {
-      console.error('Detalhes do erro:', error.message);
+      console.error(i18n.t('common.errors.details'), error.message);
       
       // Sugestões de solução baseadas no tipo de erro
       if (error.message.includes('ECONNREFUSED')) {
-        console.log('\n💡 Sugestões:');
-        console.log('- Verifique se o banco de dados está rodando');
-        console.log('- Confirme as configurações de conexão');
+        console.log(i18n.t('seed.run.messages.suggestions'));
+        console.log(i18n.t('seed.run.messages.checkDatabase'));
+        console.log(i18n.t('seed.run.messages.checkConnection'));
       } else if (error.message.includes('Cannot find module')) {
-        console.log('\n💡 Sugestões:');
-        console.log('- Verifique se os arquivos de seed existem');
-        console.log('- Confirme se as importações estão corretas');
+        console.log(i18n.t('seed.run.messages.suggestions'));
+        console.log(i18n.t('seed.run.messages.checkFiles'));
+        console.log(i18n.t('seed.run.messages.checkImports'));
       }
     }
     

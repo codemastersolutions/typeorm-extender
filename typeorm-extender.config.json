@@ -1,0 +1,11 @@
+{
+  "language": "es",
+  "database": {
+    "type": "postgres"
+  },
+  "directories": {
+    "migrations": "src/migrations",
+    "factories": "src/factories",
+    "seeds": "src/seeds"
+  }
+}

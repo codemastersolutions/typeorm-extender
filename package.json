@@ -17,7 +17,9 @@
     "CLI_INSTALLATION.md",
     "LICENSE",
     "LICENSE_es.md",
-    "LICENSE_pt_BR.md"
+    "LICENSE_pt_BR.md",
+    "MULTI_LANGUAGE.md",
+    "typeorm-extender.config.example.json"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.build.json && node scripts/post-build.js",

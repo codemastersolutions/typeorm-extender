@@ -1,0 +1,16 @@
+{
+  "language": "en",
+  "database": {
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "your_username",
+    "password": "your_password",
+    "database": "your_database"
+  },
+  "directories": {
+    "migrations": "src/migrations",
+    "factories": "src/factories",
+    "seeds": "src/seeds"
+  }
+}
