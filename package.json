@@ -41,5 +41,8 @@
   "homepage": "https://github.com/codemastersolutions/typeorm-extender#readme",
   "dependencies": {
     "typescript": "^5.8.3"
+  },
+  "node": {
+    "version": ">= 22.16.0"
   }
 }
