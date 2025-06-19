@@ -105,9 +105,42 @@ Se houver erros de compilação:
 2. Certifique-se de que todas as dependências estão instaladas
 3. Execute `npm run clean && npm run build`
 
-## Automação (Opcional)
+## 🤖 Automação com GitHub Actions
 
-Para automatizar o processo, considere usar GitHub Actions ou similar para:
-- Executar testes
-- Fazer build
-- Publicar automaticamente em tags/releases
+### Workflow Automatizado Configurado
+
+O projeto agora inclui um **workflow GitHub Actions** que automatiza completamente o processo de release:
+
+- ✅ **Acionamento**: Automático quando PR é merged na branch `main`
+- ✅ **Versionamento**: Incremento automático baseado no título do PR
+- ✅ **Build**: Compilação automática do TypeScript
+- ✅ **Release**: Criação automática de release no GitHub
+- ✅ **Publicação**: Publicação automática no NPM
+- ✅ **Changelog**: Geração automática baseada nos commits
+
+### Como Usar o Workflow
+
+1. **Configure o NPM Token**:
+   ```bash
+   # No GitHub: Settings → Secrets → Actions
+   # Adicione: NPM_TOKEN com seu token do npmjs.com
+   ```
+
+2. **Crie PRs com títulos descritivos**:
+   - `feat: nova funcionalidade` → versão MINOR
+   - `fix: correção de bug` → versão PATCH
+   - `feat: BREAKING CHANGE` → versão MAJOR
+
+3. **Merge o PR**: O workflow executa automaticamente
+
+### Documentação Completa
+
+Veja o arquivo `.github/RELEASE_WORKFLOW.md` para instruções detalhadas sobre:
+- Configuração de secrets
+- Convenções de versionamento
+- Troubleshooting
+- Customização do workflow
+
+### Publicação Manual (Alternativa)
+
+Se preferir publicar manualmente, siga os passos originais abaixo:
